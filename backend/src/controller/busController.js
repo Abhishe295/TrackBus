@@ -43,35 +43,47 @@ export const getAllBuses = async(req,res)=>{
   }
 }
 
-export const createBus = async(req,res)=>{
-  try{
-    let {busNumber, routeName} = req.body;
-    if(!busNumber || !routeName){
+export const createBus = async (req, res) => {
+  try {
+    let { busNumber, routeName } = req.body;
+
+    if (!busNumber || !routeName) {
       return res.status(400).json({
         success: false,
         message: "busNumber and routeName are required",
-      })
+      });
     }
+
     busNumber = busNumber.trim().toUpperCase();
     routeName = routeName.trim();
-    
-    const existingBus = await Bus.findOne({busNumber});
-    if(existingBus){
+
+    const existingBus = await Bus.findOne({ busNumber });
+    if (existingBus) {
       return res.status(409).json({
         success: false,
         message: "Bus already exists",
       });
     }
-    const bus  = await Bus.create({
-      busNumber,routeName,
+
+    const bus = await Bus.create({
+      busNumber,
+      routeName,
       active: true,
     });
-  }catch(e){
-    res.status(500).json({
+    
+    return res.status(201).json({
+      success: true,
+      message: "Bus created successfully",
+      bus,
+    });
+
+  } catch (e) {
+    return res.status(500).json({
       success: false,
       message: "Failed to create bus",
-    })
+    });
   }
-}
+};
+
 
 

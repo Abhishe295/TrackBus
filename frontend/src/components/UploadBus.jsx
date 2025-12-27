@@ -8,34 +8,44 @@ const UploadBus = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!busNumber || !routeName) {
-      setError("All fields are required");
-      return;
+  if (!busNumber || !routeName) {
+    setError("All fields are required");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const res = await api.post("/api/bus", {
+      busNumber: busNumber.trim().toUpperCase(),
+      routeName: routeName.trim(),
+    });
+
+    if (!res.data?.success) {
+      throw new Error(res.data?.message || "Failed to add bus");
     }
 
-    try {
-      setLoading(true);
-      await api.post("/api/bus", {
-        busNumber,
-        routeName,
-      });
+    // reset form
+    setBusNumber("");
+    setRouteName("");
 
-      setBusNumber("");
-      setRouteName("");
+    // close + refresh
+    onSuccess?.();
+  } catch (err) {
+    setError(
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to add bus"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
-      onSuccess?.(); // refresh + close modal
-    } catch (err) {
-      setError(
-        err?.response?.data?.message || "Failed to add bus"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">

@@ -16,7 +16,7 @@ const BusPage = () => {
   const [loading, setLoading] = useState(false);
 
   const { user, isAuth } = useAuthStore();
-  const { location: userLocation } = useUserLocation();
+  
 
   const {
     joinSession,
@@ -32,8 +32,10 @@ const BusPage = () => {
   const path = busState?.path || [];
   const confidence = busState?.confidence || "OFFLINE";
   const isSharingThisBus = sharingBus === activeBus;
+  const { location: userLocation } = useUserLocation(!isSharingThisBus);
 
-  useLocationSharing(user?._id);
+  useLocationSharing( isSharingThisBus? user?._id: null);
+  const isLiveBus = confidence === "LIVE";
 
   const normalizedBus = busNumber?.toUpperCase();
 
@@ -158,7 +160,7 @@ const BusPage = () => {
         )}
 
         {/* Map Section */}
-        {busLocation && (
+        {
           <div className="card bg-base-100 shadow-xl mb-6 overflow-hidden">
             <div className="card-body p-0">
               <LiveMap
@@ -166,10 +168,11 @@ const BusPage = () => {
                 path={path}
                 userLocation={userLocation}
                 isSharing={isSharingThisBus}
+                isLiveBus={confidence==="LIVE"}
               />
             </div>
           </div>
-        )}
+        }
 
         {/* Action Buttons */}
         {busInfo && !isSharingThisBus && (

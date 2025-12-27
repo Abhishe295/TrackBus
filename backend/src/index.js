@@ -27,6 +27,7 @@ const io = new Server(server, {
     origin: allowedOrigins,
     credentials: true,
   },
+  transports: ["websocket"],
 });
 
 // Middleware

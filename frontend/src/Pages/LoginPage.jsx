@@ -21,12 +21,16 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let success = false;
+
     if (isSignup) {
-      await register(form.name, form.email, form.password);
+      success = await register(form.name, form.email, form.password);
     } else {
-      await login(form.email, form.password);
+      success = await login(form.email, form.password);
     }
+    if(success){
     navigate("/");
+  }
   };
 
   return (
