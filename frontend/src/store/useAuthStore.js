@@ -24,11 +24,8 @@ const useAuthStore = create((set, get) => ({
         throw new Error("Registration failed");
       }
 
-      const success = await get().fetchUser();
-      if(!success){
-        set({loading: false});
-        return false;
-      }
+      await get().fetchUser();  
+      set({loading: false});
       return true;
     } catch (err) {
       set({
@@ -57,11 +54,9 @@ const useAuthStore = create((set, get) => ({
         throw new Error("Login failed");
       }
 
-      const success = await get().fetchUser();
-      if(!success){
-        set({loading: false});
-        return false;
-      }
+      await get().fetchUser();
+      set({loading: false});
+        
       return true;
     } catch (err) {
       set({
