@@ -120,18 +120,24 @@ const useSocketStore = create((set, get) => {
       });
 
       socket.on("session:joined", ({ busNumber, confidence, lastLocation }) => {
-        set((state) => ({
-          buses: {
-            ...state.buses,
-            [busNumber]: {
-              ...(state.buses[busNumber] || {}),
-              location: lastLocation || null,
-              confidence: confidence || "LIVE",
-              sessionActive: true,
+        set((state) => {
+          const existing = state.buses[busNumber];
+
+          return {
+            buses: {
+              ...state.buses,
+              [busNumber]: {
+                ...existing,
+                // 🔥 DO NOT overwrite if live location already exists
+                location: existing?.location ?? lastLocation ?? null,
+                confidence: confidence || existing?.confidence || "LIVE",
+                sessionActive: true,
+              },
             },
-          },
-        }));
+          };
+        });
       });
+
 
       socket.on("bus:location", ({ busNumber, lat, lng, path, confidence }) => {
         set((state) => ({

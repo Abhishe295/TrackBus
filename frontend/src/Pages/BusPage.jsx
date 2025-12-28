@@ -50,18 +50,23 @@ const BusPage = () => {
 
         setBusInfo(bus);
 
-        useSocketStore.setState((state) => ({
-          activeBus: normalizedBus,
-          buses: {
-            ...state.buses,
-            [normalizedBus]: {
-              location: session?.lastLocation || null,
-              path: session?.path || [],
-              confidence: session?.confidence || "OFFLINE",
-              sessionActive: session?.active || false,
+        useSocketStore.setState((state) => {
+          if (state.buses[normalizedBus]?.location) return state;
+
+          return {
+            activeBus: normalizedBus,
+            buses: {
+              ...state.buses,
+              [normalizedBus]: {
+                location: session?.lastLocation || null,
+                path: session?.path || [],
+                confidence: session?.confidence || "OFFLINE",
+                sessionActive: session?.active || false,
+              },
             },
-          },
-        }));
+          };
+        });
+
 
         if (activeBus !== normalizedBus) {
           joinSession(normalizedBus);
