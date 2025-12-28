@@ -25,7 +25,11 @@ const useAuthStore = create((set, get) => ({
       }
 
       const success = await get().fetchUser();
-      return success;
+      if(!success){
+        set({loading: false});
+        return false;
+      }
+      return true;
     } catch (err) {
       set({
         user: null,
@@ -54,7 +58,11 @@ const useAuthStore = create((set, get) => ({
       }
 
       const success = await get().fetchUser();
-      return success;
+      if(!success){
+        set({loading: false});
+        return false;
+      }
+      return true;
     } catch (err) {
       set({
         user: null,
