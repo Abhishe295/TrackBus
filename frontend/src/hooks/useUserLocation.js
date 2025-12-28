@@ -6,13 +6,34 @@ const useUserLocation = (enabled = true) => {
 
   useEffect(() => {
     if (!enabled) return;
-
     if (!navigator.geolocation) {
       setError("Geolocation not supported");
       return;
     }
 
-    const watchId = navigator.geolocation.watchPosition(
+    let watchId;
+
+    // 1️⃣ QUICK INITIAL FIX (important)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+        setError(null);
+      },
+      (err) => {
+        setError(err.message);
+      },
+      {
+        enableHighAccuracy: false, // 🔑 fast first fix
+        timeout: 10000,
+        maximumAge: 30000,
+      }
+    );
+
+    // 2️⃣ CONTINUOUS TRACKING (after permission + GPS warmup)
+    watchId = navigator.geolocation.watchPosition(
       (pos) => {
         setLocation({
           lat: pos.coords.latitude,
@@ -25,13 +46,15 @@ const useUserLocation = (enabled = true) => {
         setError(err.message);
       },
       {
-        enableHighAccuracy: true,   // ✅ FORCE GPS
-        timeout: 20000,
-        maximumAge: 0,              // ✅ NO CACHING
+        enableHighAccuracy: true, // 🔥 GPS once warmed
+        timeout: 30000,           // ⬅️ IMPORTANT
+        maximumAge: 5000,
       }
     );
 
-    return () => navigator.geolocation.clearWatch(watchId);
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+    };
   }, [enabled]);
 
   return { location, error };

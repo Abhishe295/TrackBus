@@ -91,6 +91,21 @@ const BusPage = () => {
     });
   }, [isAuth, user, activeBus, normalizedBus]);
 
+  useEffect(() => {
+  if (!isSharingThisBus || !userLocation || !activeBus) return;
+
+  useSocketStore.setState((state) => ({
+    buses: {
+      ...state.buses,
+      [activeBus]: {
+        ...state.buses[activeBus],
+        location: userLocation, // 🔥 instant visual sync
+      },
+    },
+  }));
+}, [isSharingThisBus, userLocation, activeBus]);
+
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
