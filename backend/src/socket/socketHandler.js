@@ -88,7 +88,7 @@ const session = await LiveSession.findOneAndUpdate(
       if (session.lastLocation) {
         const dist = distanceInMeters(session.lastLocation, newPoint);
 
-        if (dist >= 1.5) {
+        if (dist >= 1.0) {
           moved = true;
           session.lastMovementAt = now;
         }
