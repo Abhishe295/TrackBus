@@ -21,25 +21,25 @@ export const socketHandler = (io) => {
   io.on("connection", (socket) => {
     socket.on("session:start", async ({ busNumber, userId }) => {
       const now = new Date();
-const session = await LiveSession.findOneAndUpdate(
-  { busNumber },
-  {
-    $set: {
-      active: true,
-      lastPingAt: now,
-      confidence: "LIVE",
-      lastContributor: userId || null,
-    },
-    $setOnInsert: {
-      sessionId: uuidv4(),
-      startedAt: now,
-      path: [],
-      initialPosition: null,
-      lastMovementAt: now,
-    },
-  },
-  { new: true, upsert: true }
-);
+    const session = await LiveSession.findOneAndUpdate(
+      { busNumber },
+      {
+        $set: {
+          active: true,
+          lastPingAt: now,
+          confidence: "LIVE",
+          lastContributor: userId || null,
+        },
+        $setOnInsert: {
+          sessionId: uuidv4(),
+          startedAt: now,
+          path: [],
+          initialPosition: null,
+          lastMovementAt: now,
+        },
+      },
+      { new: true, upsert: true }
+    );
 
 
 
